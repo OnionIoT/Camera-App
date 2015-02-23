@@ -1,0 +1,72 @@
+<html>
+    <head>
+        <title>Webcam Demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <style>
+            * {
+                font-family: sans-serif;
+                color: #333;
+            }
+
+            html, body {
+                position: relative;
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            #tracker {
+                position: absolute;
+                height: 320px;
+                width: 320px;
+                background-color: #eee;
+                border-radius: 5px;
+                left: 50%;
+                top: 50%;
+                margin-top: -160px;
+                margin-left: -160px;
+            }
+
+            #title {
+                position: relative;
+                text-align: center;
+                line-height: 150px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="title">Webcam Demo</h1>
+        <div id="tracker"></div>
+    <script>
+        var x, y, lastX, lastY;
+        
+        $('#tracker').mousemove(function (e) {
+            var offset = $(this).offset();
+            x = Math.floor((e.pageX - offset.left) / 500 * 180);
+            y = Math.floor((e.pageY - offset.top) / 500 * 180);
+        });
+
+        $('#tracker').on('touchmove', function (e) {
+            e.preventDefault();
+            var event = window.event;
+            var offset = $(e.target).offset();
+            x = Math.floor((event.touches[0].pageX - offset.left) / 320 * 180);
+            y = Math.floor((event.touches[0].pageY - offset.top) / 320 * 180);
+            if (x > 180) x = 180;
+            else if (x < 0) x = 0;
+            if (y > 180) x = 180;
+            else if (y < 0) y = 0;
+        });
+
+        setInterval(function () {
+            if (x !== lastX || y !== lastY) {
+                lastX = x;
+                lastY = y;
+                $.get('http://192.168.1.207:8080?x=' + x + '&y=' + y);
+            }
+        }, 30);
+    </script>
+    </body>
+</html>
